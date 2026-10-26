@@ -1,0 +1,210 @@
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.8.28;
+
+interface ISettlementToken {
+    function transfer(address to, uint256 amount) external returns (bool);
+    function transferFrom(address from, address to, uint256 amount) external returns (bool);
+    function balanceOf(address account) external view returns (uint256);
+}
+
+/// @title ЦФА {{ issue_number }}: денежные требования к {{ issuer_name }}
+/// @notice Суммы указаны в копейках расчётного токена, даты — в секундах Unix по московскому времени
+contract DigitalFinancialAsset {
+    enum Phase {
+        Subscription,
+        Issued,
+        Failed,
+        Redeemed
+    }
+
+    string public constant ISSUE_NUMBER = "{{ issue_number }}";
+    uint256 public constant NOMINAL = {{ nominal | sol_int }};
+    uint256 public constant PRICE = {{ price | sol_int }};
+    uint256 public constant MIN_QUANTITY = {{ min_quantity | sol_int }};
+    uint256 public constant MAX_QUANTITY = {{ max_quantity | sol_int }};
+    uint64 public constant BOOK_START = {{ book_start | sol_int }};
+    uint64 public constant BOOK_END = {{ book_end | sol_int }};
+    uint64 public constant ISSUE_DATE = {{ issue_date | sol_int }};
+    bool public constant QUALIFIED_ONLY = {{ "true" if qualified_only else "false" }};
+    uint256 public constant PERIODS = {{ periods | length }};
+
+    ISettlementToken public immutable settlement;
+    address public immutable operator;
+    address public immutable issuer;
+
+    Phase public phase;
+    uint256 public totalSupply;
+    uint256 public totalSubscribed;
+    uint256 public paidPeriods;
+
+    mapping(address => bool) public identified;
+    mapping(address => bool) public qualified;
+    mapping(address => uint256) public subscribed;
+    mapping(address => uint256) public balanceOf;
+
+    address[] private subscribers;
+    address[] private holders;
+    mapping(address => bool) private isHolder;
+
+    event InvestorUpdated(address indexed investor, bool identified, bool qualified);
+    event Subscribed(address indexed investor, uint256 quantity);
+    event IssueCompleted(uint256 quantity, uint256 proceeds);
+    event IssueFailed(uint256 subscribed);
+    event Refunded(address indexed investor, uint256 amount);
+    event Transfer(address indexed from, address indexed to, uint256 quantity);
+    event PeriodPaid(uint256 indexed period, uint256 perAsset, uint256 total);
+
+    error NotOperator();
+    error WrongPhase(Phase expected, Phase actual);
+    error OutsideBookBuilding();
+    error NotEligible(address investor);
+    error ExceedsMaximum(uint256 requested, uint256 available);
+    error ZeroQuantity();
+    error TooEarly(uint64 paymentDate);
+    error InsufficientFunds(uint256 required, uint256 available);
+    error InsufficientBalance(uint256 requested, uint256 available);
+    error SettlementFailed();
+    error ZeroAddress();
+
+    modifier onlyOperator() {
+        if (msg.sender != operator) revert NotOperator();
+        _;
+    }
+
+    modifier inPhase(Phase expected) {
+        if (phase != expected) revert WrongPhase(expected, phase);
+        _;
+    }
+
+    constructor(ISettlementToken settlement_, address operator_, address issuer_) {
+        if (address(settlement_) == address(0) || operator_ == address(0) || issuer_ == address(0)) {
+            revert ZeroAddress();
+        }
+        settlement = settlement_;
+        operator = operator_;
+        issuer = issuer_;
+    }
+
+    function paymentDate(uint256 period) public pure returns (uint64) {
+        {%- for period in periods %}
+        if (period == {{ loop.index0 }}) return {{ period.payment_date | sol_int }};
+        {%- endfor %}
+        revert();
+    }
+
+    function couponPerAsset(uint256 period) public pure returns (uint256) {
+        {%- for period in periods %}
+        if (period == {{ loop.index0 }}) return {{ period.coupon | sol_int }};
+        {%- endfor %}
+        revert();
+    }
+
+    function principalPerAsset(uint256 period) public pure returns (uint256) {
+        return period == PERIODS - 1 ? NOMINAL : 0;
+    }
+
+    function setInvestor(address investor, bool isIdentified, bool isQualified) external onlyOperator {
+        identified[investor] = isIdentified;
+        qualified[investor] = isQualified;
+        emit InvestorUpdated(investor, isIdentified, isQualified);
+    }
+
+    function eligible(address investor) public view returns (bool) {
+        return identified[investor] && (!QUALIFIED_ONLY || qualified[investor]);
+    }
+
+    function subscribe(uint256 quantity) external inPhase(Phase.Subscription) {
+        if (block.timestamp < BOOK_START || block.timestamp > BOOK_END) revert OutsideBookBuilding();
+        if (!eligible(msg.sender)) revert NotEligible(msg.sender);
+        if (quantity == 0) revert ZeroQuantity();
+        uint256 available = MAX_QUANTITY - totalSubscribed;
+        if (quantity > available) revert ExceedsMaximum(quantity, available);
+
+        if (subscribed[msg.sender] == 0) subscribers.push(msg.sender);
+        subscribed[msg.sender] += quantity;
+        totalSubscribed += quantity;
+        emit Subscribed(msg.sender, quantity);
+
+        if (!settlement.transferFrom(msg.sender, address(this), quantity * PRICE)) revert SettlementFailed();
+    }
+
+    function finalize() external onlyOperator inPhase(Phase.Subscription) {
+        if (block.timestamp < ISSUE_DATE) revert TooEarly(ISSUE_DATE);
+        if (totalSubscribed < MIN_QUANTITY) {
+            phase = Phase.Failed;
+            emit IssueFailed(totalSubscribed);
+            return;
+        }
+
+        phase = Phase.Issued;
+        totalSupply = totalSubscribed;
+        uint256 count = subscribers.length;
+        for (uint256 i = 0; i < count; i++) {
+            address investor = subscribers[i];
+            balanceOf[investor] = subscribed[investor];
+            _trackHolder(investor);
+            emit Transfer(address(0), investor, subscribed[investor]);
+        }
+        uint256 proceeds = totalSupply * PRICE;
+        emit IssueCompleted(totalSupply, proceeds);
+
+        if (!settlement.transfer(issuer, proceeds)) revert SettlementFailed();
+    }
+
+    function refund() external inPhase(Phase.Failed) {
+        uint256 amount = subscribed[msg.sender] * PRICE;
+        subscribed[msg.sender] = 0;
+        emit Refunded(msg.sender, amount);
+
+        if (!settlement.transfer(msg.sender, amount)) revert SettlementFailed();
+    }
+
+    function transfer(address to, uint256 quantity) external inPhase(Phase.Issued) returns (bool) {
+        if (!eligible(to)) revert NotEligible(to);
+        uint256 available = balanceOf[msg.sender];
+        if (quantity > available) revert InsufficientBalance(quantity, available);
+
+        balanceOf[msg.sender] = available - quantity;
+        balanceOf[to] += quantity;
+        _trackHolder(to);
+        emit Transfer(msg.sender, to, quantity);
+        return true;
+    }
+
+    function payNextPeriod() external inPhase(Phase.Issued) {
+        uint256 period = paidPeriods;
+        uint64 dueDate = paymentDate(period);
+        if (block.timestamp < dueDate) revert TooEarly(dueDate);
+
+        uint256 perAsset = couponPerAsset(period) + principalPerAsset(period);
+        uint256 required = perAsset * totalSupply;
+        uint256 available = settlement.balanceOf(address(this));
+        if (available < required) revert InsufficientFunds(required, available);
+
+        paidPeriods = period + 1;
+        bool isFinal = paidPeriods == PERIODS;
+        if (isFinal) phase = Phase.Redeemed;
+
+        uint256 count = holders.length;
+        uint256[] memory amounts = new uint256[](count);
+        for (uint256 i = 0; i < count; i++) {
+            address holder = holders[i];
+            amounts[i] = balanceOf[holder] * perAsset;
+            if (isFinal) balanceOf[holder] = 0;
+        }
+        if (isFinal) totalSupply = 0;
+        emit PeriodPaid(period, perAsset, required);
+
+        for (uint256 i = 0; i < count; i++) {
+            if (amounts[i] == 0) continue;
+            if (!settlement.transfer(holders[i], amounts[i])) revert SettlementFailed();
+        }
+    }
+
+    function _trackHolder(address account) private {
+        if (!isHolder[account]) {
+            isHolder[account] = true;
+            holders.push(account);
+        }
+    }
+}
