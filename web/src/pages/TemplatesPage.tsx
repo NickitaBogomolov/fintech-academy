@@ -44,7 +44,7 @@ function TemplateView({ template, onDelete }: { template: TemplateInfo; onDelete
           <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-500">Поля, которые подставляются</div>
           <div className="flex flex-wrap gap-1.5">
             {template.variables.map((variable) => (
-              <code key={variable} className="rounded bg-brand-50 px-1.5 py-0.5 font-mono text-xs text-brand-800">
+              <code key={variable} className="break-all rounded bg-brand-50 px-1.5 py-0.5 font-mono text-xs text-brand-800">
                 {variable}
               </code>
             ))}
@@ -171,7 +171,7 @@ export function TemplatesPage() {
           </Button>
         }
       />
-      <div className="grid gap-6 lg:grid-cols-[300px_1fr]">
+      <div className="grid gap-6 lg:grid-cols-[300px_minmax(0,1fr)]">
         <div className="space-y-3">
           {list.map((template) => (
             <button
@@ -186,9 +186,9 @@ export function TemplatesPage() {
                 !creating && current?.id === template.id ? 'border-brand-600 ring-1 ring-brand-600' : 'border-ink-200 hover:border-ink-300',
               )}
             >
-              <div className="flex items-center gap-2">
-                <LayoutTemplate className="h-4 w-4 text-brand-700" />
-                <span className="text-sm font-medium text-ink-900">{template.title}</span>
+              <div className="flex items-start gap-2">
+                <LayoutTemplate className="mt-0.5 h-4 w-4 shrink-0 text-brand-700" />
+                <span className="text-sm font-medium leading-5 text-ink-900">{template.title}</span>
               </div>
               <div className="mt-1 font-mono text-xs text-ink-500">{template.id}</div>
               <div className="mt-2 text-xs text-ink-500">Полей: {template.variables.length}</div>
@@ -197,13 +197,14 @@ export function TemplatesPage() {
           <Card className="p-4">
             <div className="text-xs font-semibold uppercase tracking-wide text-ink-500">Разметка</div>
             <p className="mt-2 text-xs text-ink-600">
-              Поле: <code className="font-mono">{'{{ spec.nominal | money_words }}'}</code>. Условие:{' '}
-              <code className="font-mono">{'{% if spec.early_redemption %}…{% endif %}'}</code>
+              Поле: <code className="break-all font-mono">{'{{ spec.nominal | money_words }}'}</code>
+              <br />
+              Условие: <code className="break-all font-mono">{'{% if spec.early_redemption %}…{% endif %}'}</code>
             </p>
             <dl className="mt-3 space-y-1 text-xs">
               {VARIABLES.map(([name, label]) => (
-                <div key={name} className="flex justify-between gap-2">
-                  <dt className="font-mono text-ink-700">{name}</dt>
+                <div key={name} className="grid grid-cols-[minmax(0,1fr)_auto] gap-3">
+                  <dt className="break-words font-mono text-ink-700">{name}</dt>
                   <dd className="text-right text-ink-500">{label}</dd>
                 </div>
               ))}
@@ -211,7 +212,7 @@ export function TemplatesPage() {
             <div className="mt-3 text-xs text-ink-500">Форматы: {FILTERS.join(', ')}</div>
           </Card>
         </div>
-        <div>
+        <div className="min-w-0">
           {creating ? (
             <TemplateEditor
               initial={list.find((template) => template.builtin)?.source ?? ''}
