@@ -199,6 +199,8 @@ def _term(ctx: _Context) -> None:
                 continue
         ctx.put("term_months", months, match)
         return
+    if match := ctx.search(r"(?<![\d.,])(?P<n>\d{1,2})\s*(?:мес\.?|месяц\w*)(?=[\s,.;]|$)"):
+        ctx.put("term_months", int(match.group("n")), match)
 
 
 def _issue_date(ctx: _Context) -> None:
@@ -239,7 +241,7 @@ def _rounding(ctx: _Context) -> None:
     if match := ctx.search(r"математическ\w*\s+округл\w*|округл\w*\s+(?:по\s+правилам\s+)?математ\w*"):
         ctx.put("rounding_mode", "half_up", match)
     elif match := ctx.search(
-        r"округл\w*\s+вниз|отбрасыва\w*\s+(?:дол\w*\s+)?копе\w*|без\s+округления\s+вверх"
+        r"округл\w*\s+вниз|отбрасыва\w*\s+(?:дол\w*\s+)?копе\w*|дол\w*\s+копе\w*\s+отбрасыва\w*|без\s+округления\s+вверх"
     ):
         ctx.put("rounding_mode", "down", match)
 

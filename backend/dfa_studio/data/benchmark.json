@@ -1,0 +1,87 @@
+{
+  "name": "Описания выпусков, набор v1",
+  "today": "2026-10-26",
+  "source": "Синтетический набор из 20 описаний в стиле обращений эмитентов: краткие, подробные, с разговорными формулировками",
+  "cases": [
+    {
+      "text": "Хотим привлечь до 300 млн рублей на полгода, номинал 1000 ₽, купон 18% годовых ежемесячно, только для квалов",
+      "expected": {"max_amount": "300000000", "term_months": 6, "nominal": "1000", "coupon_rate": "18", "coupon_frequency": "monthly", "investors": "qualified_only"}
+    },
+    {
+      "text": "Выпуск на 500 млн на 1 год, номинал 10 000 руб, ставка 21,5% раз в квартал, размещение 15 декабря 2026, минимум 50% от объёма, для всех инвесторов",
+      "expected": {"max_amount": "500000000", "term_months": 12, "nominal": "10000", "coupon_rate": "21.5", "coupon_frequency": "quarterly", "issue_date": "2026-12-15", "min_amount": "250000000", "investors": "all"}
+    },
+    {
+      "text": "Разместить ЦФА на сумму 1,2 млрд руб сроком 9 месяцев, номинал 100 000 ₽, доходность 17 процентов, выплата в дату погашения, не менее 200 млн",
+      "expected": {"max_amount": "1200000000", "term_months": 9, "nominal": "100000", "coupon_rate": "17", "coupon_frequency": "at_maturity", "min_amount": "200000000"}
+    },
+    {
+      "text": "Нужно 150 млн на 3 месяца под 19% с выплатой каждый месяц. Номинал 1000. Только квалифицированные инвесторы",
+      "expected": {"max_amount": "150000000", "term_months": 3, "coupon_rate": "19", "coupon_frequency": "monthly", "nominal": "1000", "investors": "qualified_only"}
+    },
+    {
+      "text": "ИНН 0000000002, объём выпуска 750 млн рублей, срок 2 года, купон 16,75% ежеквартально, номинал 10 тыс. руб.",
+      "expected": {"issuer_inn": "0000000002", "max_amount": "750000000", "term_months": 24, "coupon_rate": "16.75", "coupon_frequency": "quarterly", "nominal": "10000"}
+    },
+    {
+      "text": "Привлечение 80 млн ₽ на год, выплаты раз в полгода, ставка 20%, номинал 1 000 руб., размещение 01.02.2027, перенос выплат на следующий рабочий день",
+      "expected": {"max_amount": "80000000", "term_months": 12, "coupon_frequency": "semiannual", "coupon_rate": "20", "nominal": "1000", "issue_date": "2027-02-01", "business_day_rule": "following"}
+    },
+    {
+      "text": "Короткий выпуск: 50 млн на 6 месяцев, 18,5% годовых в конце срока, номинал 1000 рублей, минимальный объём 10 млн",
+      "expected": {"max_amount": "50000000", "term_months": 6, "coupon_rate": "18.5", "coupon_frequency": "at_maturity", "nominal": "1000", "min_amount": "10000000"}
+    },
+    {
+      "text": "Планируем выпуск ЦФА для розничных инвесторов на 200 млн, номинал 1000 ₽, 17% годовых, выплата ежемесячно, срок 1 год, округление математическое",
+      "expected": {"investors": "all", "max_amount": "200000000", "nominal": "1000", "coupon_rate": "17", "coupon_frequency": "monthly", "term_months": 12, "rounding_mode": "half_up"}
+    },
+    {
+      "text": "Объём до 1 млрд рублей, номинал 100 000 руб, ставка 15% раз в год, срок 3 года, без досрочного погашения, только квалы",
+      "expected": {"max_amount": "1000000000", "nominal": "100000", "coupon_rate": "15", "coupon_frequency": "annual", "term_months": 36, "early_redemption": false, "investors": "qualified_only"}
+    },
+    {
+      "text": "Хотим 400 млн на полтора года, купон 18% ежеквартально, номинал 10000, если заявок меньше 100 млн — выпуск не состоится",
+      "expected": {"max_amount": "400000000", "term_months": 18, "coupon_rate": "18", "coupon_frequency": "quarterly", "nominal": "10000", "min_amount": "100000000"}
+    },
+    {
+      "text": "Размещение 20 января 2027, сбор заявок 5 рабочих дней, 250 млн на 6 месяцев, 19,25% ежемесячно, номинал 1000 ₽",
+      "expected": {"issue_date": "2027-01-20", "book_days": 5, "max_amount": "250000000", "term_months": 6, "coupon_rate": "19.25", "coupon_frequency": "monthly", "nominal": "1000"}
+    },
+    {
+      "text": "ЦФА на 60 млн, номинал 1000, срок 4 месяца, ставка 21% с выплатой при погашении, распределение заявок пропорционально",
+      "expected": {"max_amount": "60000000", "nominal": "1000", "term_months": 4, "coupon_rate": "21", "coupon_frequency": "at_maturity", "allocation": "pro_rata"}
+    },
+    {
+      "text": "Нам нужно 2 млрд рублей на 2 года. Купон 14,5% раз в полгода. Номинал 100 тыс. Только квалифицированным. С возможностью досрочного погашения",
+      "expected": {"max_amount": "2000000000", "term_months": 24, "coupon_rate": "14.5", "coupon_frequency": "semiannual", "nominal": "100000", "investors": "qualified_only", "early_redemption": true}
+    },
+    {
+      "text": "Выпуск 120 млн руб на 9 месяцев, 18% годовых ежемесячно, номинал 1 000 ₽, при выплате доли копейки отбрасываем",
+      "expected": {"max_amount": "120000000", "term_months": 9, "coupon_rate": "18", "coupon_frequency": "monthly", "nominal": "1000", "rounding_mode": "down"}
+    },
+    {
+      "text": "Привлечь 35 млн на 3 месяца под 22 процента годовых, выплата дохода в конце срока, номинал 1000 рублей, для физлиц",
+      "expected": {"max_amount": "35000000", "term_months": 3, "coupon_rate": "22", "coupon_frequency": "at_maturity", "nominal": "1000", "investors": "all"}
+    },
+    {
+      "text": "Объём выпуска — 600 млн руб., номинал — 10 000 руб., ставка — 17,8%, периодичность — ежеквартально, срок обращения 12 месяцев, выплаты с выходных на предыдущий рабочий день",
+      "expected": {"max_amount": "600000000", "nominal": "10000", "coupon_rate": "17.8", "coupon_frequency": "quarterly", "term_months": 12, "business_day_rule": "preceding"}
+    },
+    {
+      "text": "Нужно занять триста миллионов на полгода под восемнадцать процентов с ежемесячной выплатой, номинал тысяча рублей",
+      "expected": {"max_amount": "300000000", "term_months": 6, "coupon_rate": "18", "coupon_frequency": "monthly", "nominal": "1000"}
+    },
+    {
+      "text": "Делаем ЦФА: 90 млн, 6 мес., купон 20,5% каждый месяц, номинал 1000 ₽, старт размещения 03.03.2027",
+      "expected": {"max_amount": "90000000", "term_months": 6, "coupon_rate": "20.5", "coupon_frequency": "monthly", "nominal": "1000", "issue_date": "2027-03-03"}
+    },
+    {
+      "text": "ИНН 0000000003. Выпуск на 5 млрд рублей сроком 3 года, номинал 100 000 руб., ставка 13,9% раз в год, минимум 1 млрд, заявки в порядке очереди",
+      "expected": {"issuer_inn": "0000000003", "max_amount": "5000000000", "term_months": 36, "nominal": "100000", "coupon_rate": "13.9", "coupon_frequency": "annual", "min_amount": "1000000000", "allocation": "first_come"}
+    },
+    {
+      "text": "Хотели бы привлечь около 70 млн на год для пополнения оборотки, платить инвесторам раз в квартал по ставке 19%, номинал 1000",
+      "expected": {"max_amount": "70000000", "term_months": 12, "coupon_frequency": "quarterly", "coupon_rate": "19", "nominal": "1000"}
+    }
+  ]
+}
