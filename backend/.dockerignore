@@ -1,0 +1,7 @@
+.venv
+.pytest_cache
+.ruff_cache
+data
+tests
+toolchain/solc/node_modules
+**/__pycache__
