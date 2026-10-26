@@ -13,7 +13,7 @@ web/dist/
 
 .env
 *.sqlite3
-data/
+backend/data/
 .DS_Store
 .idea/
 .vscode/
