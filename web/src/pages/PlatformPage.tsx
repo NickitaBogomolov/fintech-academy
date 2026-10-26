@@ -122,7 +122,7 @@ export function PlatformPage() {
           <CardHeader title="Соответствие требованиям" />
           <div className="divide-y divide-ink-100">
             {COMPLIANCE.map((row) => (
-              <div key={row.norm} className="grid gap-2 px-5 py-3 sm:grid-cols-[130px_1fr]">
+              <div key={row.norm} className="grid gap-2 px-5 py-3 sm:grid-cols-[170px_1fr]">
                 <div className="text-sm font-semibold text-ink-900">{row.norm}</div>
                 <div className="text-sm text-ink-600">{row.how}</div>
               </div>
