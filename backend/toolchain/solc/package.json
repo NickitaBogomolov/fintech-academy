@@ -1,0 +1,8 @@
+{
+  "name": "dfa-studio-solc",
+  "private": true,
+  "description": "Solidity compiler shim used by the verification pipeline",
+  "dependencies": {
+    "solc": "0.8.28"
+  }
+}

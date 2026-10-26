@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+DIR="$(cd "$(dirname "$0")" && pwd)"
+if [ "$1" = "--version" ]; then
+  echo "solc, the solidity compiler commandline interface"
+  echo "Version: $(node -e "process.stdout.write(require('$DIR/node_modules/solc').version().replace('Emscripten.clang', 'Linux.g++'))")"
+  exit 0
+fi
+exec node "$DIR/combined.js" "$@"
