@@ -19,6 +19,9 @@ class Settings(BaseSettings):
     llm_timeout: float = 60.0
     solc_dir: Path = BACKEND_ROOT / "toolchain" / "solc"
     slither_enabled: bool = True
+    operator_name: str = "ООО «Оператор ИС»"
+    operator_ogrn: str = "0000000000010"
+    operator_website: str = "https://operator.example"
     cors_origins: list[str] = ["http://localhost:5173"]
 
     @property
