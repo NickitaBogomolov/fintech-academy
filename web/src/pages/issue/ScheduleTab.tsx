@@ -35,7 +35,7 @@ export function ScheduleTab({ issue }: { issue: IssuePackage }) {
               <XAxis dataKey="label" tickLine={false} axisLine={{ stroke: '#dde1e8' }} tick={{ fill: '#6b7487', fontSize: 12 }} />
               <YAxis tickLine={false} axisLine={false} tick={{ fill: '#6b7487', fontSize: 12 }} tickFormatter={(value: number) => `${value} ₽`} width={64} />
               <Tooltip content={<ChartTooltip />} cursor={{ fill: '#eff5ff' }} />
-              <Bar dataKey="coupon" fill="#2a78d6" radius={[4, 4, 0, 0]} maxBarSize={48} />
+              <Bar dataKey="coupon" fill="#2a78d6" radius={[4, 4, 0, 0]} maxBarSize={48} isAnimationActive={false} />
             </BarChart>
           </ResponsiveContainer>
         </div>

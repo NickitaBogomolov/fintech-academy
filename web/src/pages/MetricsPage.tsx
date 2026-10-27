@@ -78,7 +78,7 @@ function PreparationChart({ metrics }: { metrics: Metrics }) {
                 formatter={(value: number) => [`${value} мин`, 'Подготовка']}
                 labelFormatter={(label: string, payload) => `${label} · ${payload?.[0] ? dateTime(payload[0].payload.when) : ''}`}
               />
-              <Bar dataKey="minutes" fill="#2a78d6" radius={[4, 4, 0, 0]} maxBarSize={40} />
+              <Bar dataKey="minutes" fill="#2a78d6" radius={[4, 4, 0, 0]} maxBarSize={40} isAnimationActive={false} />
             </BarChart>
           </ResponsiveContainer>
         ) : (

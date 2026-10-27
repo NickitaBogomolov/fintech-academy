@@ -8,13 +8,13 @@ SyntaxHighlighter.registerLanguage('markdown', markdown)
 
 export function CodeView({ code, language, maxHeight = 640 }: { code: string; language: 'solidity' | 'markdown'; maxHeight?: number }) {
   return (
-    <div className="overflow-hidden rounded-lg border border-ink-200 bg-[#fafafa]">
+    <div className="min-w-0 overflow-hidden rounded-lg border border-ink-200 bg-[#fafafa]">
       <SyntaxHighlighter
         language={language}
         style={oneLight}
         showLineNumbers
         wrapLongLines={language === 'markdown'}
-        customStyle={{ margin: 0, maxHeight, fontSize: 12.5, background: 'transparent', fontFamily: 'JetBrains Mono Variable, monospace' }}
+        customStyle={{ margin: 0, maxHeight, overflow: 'auto', fontSize: 12.5, background: 'transparent', fontFamily: 'JetBrains Mono Variable, monospace' }}
         lineNumberStyle={{ color: '#9aa3b2', minWidth: '2.5em' }}
       >
         {code}

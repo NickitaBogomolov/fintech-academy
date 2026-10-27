@@ -11,7 +11,7 @@ from pydantic import BaseModel
 
 from dfa_studio.contracts.generator import FAULT_LABELS, ContractFault
 from dfa_studio.documents.docx_export import markdown_to_docx
-from dfa_studio.documents.render import TemplateValidationError
+from dfa_studio.documents.render import TemplateValidationError, validate_template
 from dfa_studio.domain.builder import SpecError
 from dfa_studio.domain.fields import FIELDS, GROUPS
 from dfa_studio.extraction.drafting import Draft
@@ -164,6 +164,7 @@ def create_app() -> FastAPI:
 
     @app.post("/api/templates")
     def save_template(request: TemplateRequest, studio: StudioDep) -> dict[str, Any]:
+        validate_template(request.source)
         studio.sample_document(request.source)
         return vars(studio.templates.save(request.id, request.source))
 
